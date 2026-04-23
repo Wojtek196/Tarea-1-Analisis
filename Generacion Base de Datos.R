@@ -1,12 +1,13 @@
 # Librerias
 library(dplyr)
 library(stringr)
+library(readxl)
 
 # Limpieza
 rm(list = ls())
 graphics.off() 
 
-# Lectura de csv's
+# Lectura de datos
 inscripcion <- read.csv("DB/Inscripcion/ArchivoB_Adm2025.csv", sep = ";")
 dInscripcion <- read_xlsx("DB/Inscripcion/Libro_CódigosADM2025_ArchivoB.xlsx")
 
@@ -15,6 +16,8 @@ dpostulacion <- read_xlsx("DB/Postulacion/Libro_CódigosADM2025_ArchivoD.xlsx")
 
 rendicion <- read.csv("DB/Rendicion/ArchivoC_Adm2025.csv", sep = ";")
 drendicion <- read_xlsx("DB/Rendicion/Libro_CódigosADM2025_ArchivoC.xlsx")
+
+carrerasStem <-  read_xlsx("DB/Carreras STEM.xlsx")
 
 # Depuracion Inscripcion
 inscripcion <- inscripcion %>%
@@ -81,7 +84,10 @@ rendicion <- rendicion %>%
 
 
 Fuente <- postulacion %>%
-  left_join(inscripcion, by = "ID_aux") %>%
+  inner_join(inscripcion, by = "ID_aux") %>% 
   left_join(rendicion, by = "ID_aux") %>%
   filter(MEJOR_M2 > 0) %>%
   select(-MEJOR_CIENCIA)
+
+Fuente <- Fuente %>%
+  semi_join(carrerasStem, by = c("COD_CARRERA_PREF" = "COD"))
